@@ -22,7 +22,7 @@ bench: ## Run benchmarks. See https://pkg.go.dev/cmd/go#hdr-Testing_flags
 	go test ./... -bench . -benchtime 5s -timeout 0 -run=XXX -cpu 1 -benchmem
 
 update: ## Update packages
-	@find . -name "go.mod" -execdir sh -c 'echo "Updating $$(pwd)"; go get -u ./... && go mod tidy' \;
+	@find . -name "go.mod" -execdir sh -c 'echo "Updating $$(pwd)"; go get -u all && go mod tidy' \;
 
 generate: generate-go## Generate Go files.
 generate-go: $(GO_FILES) ## Generate Go files
