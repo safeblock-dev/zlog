@@ -3,7 +3,7 @@ package zlog_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"testing"
 	"time"
 
@@ -30,7 +30,7 @@ func TestOutput(t *testing.T) {
 		zlog.WithCaller(0),
 		zlog.WithVersion("dev"),
 	)
-	log.Err(fmt.Errorf("test")).Msg("hello")
+	log.Err(errors.New("test")).Msg("hello")
 
 	rec := &logRecord{}
 	require.NoError(t, json.NewDecoder(&buf).Decode(rec))
