@@ -33,7 +33,7 @@ import (
 
 func main() {
     // Initialize the logger with a version string
-    zlog.Init("1.0.0")
+    zlog.Init()
 
     // Log messages
     log.Info().Str("key", "value").Msg("This is an informational log")
@@ -45,18 +45,20 @@ func main() {
 
 ZLog behavior is configured through environment variables. These variables allow you to customize the log level, enable pretty logs, and include caller information.
 
-| Environment Variable | Description                                       | Default        |
-|----------------------|---------------------------------------------------|----------------|
-| `LOG_LEVEL`          | Sets the log level (`debug`, `info`, `error`, etc.)| `info`         |
-| `LOG_PRETTY`         | Enables pretty logging for human-readable output  | `false`        |
-| `LOG_CALLER`         | Includes caller information in the log entries    | `false`        |
+| Environment Variable | Description                                                                   | Default |
+|----------------------|-------------------------------------------------------------------------------|---------|
+| `LOG_CALLER`         | Includes caller information in the log entries                                | `false` |
+| `LOG_COLOR`          | Enables pretty logging for human-readable output (works with LOG_FORMAT=text) | `false` |
+| `LOG_FORMAT`         | Sets the log format mode (`json`, `text`)                                     | `json`  |
+| `LOG_LEVEL`          | Sets the log level (`debug`, `info`, `error`, etc.)                           | `info`  |
 
 #### Example Configuration
 
 ```bash
-export LOG_LEVEL=debug
-export LOG_PRETTY=true
 export LOG_CALLER=true
+export LOG_COLOR=true
+export LOG_FORMAT=text
+export LOG_LEVEL=debug
 ```
 
 This setup configures ZLog to log messages at the `debug` level, output logs in a human-readable format, and include caller information.
@@ -79,15 +81,16 @@ You can configure the log level using the `LOG_LEVEL` environment variable:
 package main
 
 import (
+    "os"
     "github.com/safeblock-dev/zlog"
     "github.com/rs/zerolog/log"
 )
 
 func main() {
     // Set the log level to debug via environment variable
-    _ = os.Setenv("LOG_LEVEL", "debug")
+    os.Setenv("LOG_LEVEL", "debug")
 
-    zlog.Init("1.0.0")
+    zlog.Init()
 
     log.Debug().Msg("This is a debug message")
     log.Info().Msg("This is an info message")
@@ -96,10 +99,11 @@ func main() {
 
 ### Pretty Logging
 
-You can enable pretty logging (human-readable format) by setting the `LOG_PRETTY` environment variable:
+You can enable pretty logging (human-readable format) by setting the `LOG_FORMAT` and `LOG_COLOR` environment variable:
 
 ```bash
-export LOG_PRETTY=true
+export LOG_COLOR=true
+export LOG_FORMAT=text
 ```
 
 When enabled, the logs will be printed in a more readable format:
@@ -119,7 +123,59 @@ export LOG_CALLER=true
 When enabled, log entries will include caller information like this:
 
 ```bash
-2024-09-20T13:51:00+00:00 INF main.go:15 > This is an info message
+{"level":"info","time":"2024-12-12T23:53:15+05:00","caller":"main.go:42","message":"This is an info message"}
+```
+
+### Version Information
+
+You can set version information logging by setting the `LOG_CALLER` environment variable. This will include the file and line number from which the log was generated.
+
+```go
+package main
+
+import (
+    "errors"
+    "github.com/safeblock-dev/zlog"
+    "github.com/rs/zerolog/log"
+)
+
+func main() {
+    zlog.Init(zlog.WithVersion("1.0.0"))
+
+	  log.Info().Msg("This is an info message")
+}
+```
+
+```bash
+{"level":"info","version":"1.0.0","time":"2024-12-12T23:51:22+05:00","message":"This is an info message"}
+```
+
+### Multiply options
+
+You can set version information logging by setting the `LOG_CALLER` environment variable. This will include the file and line number from which the log was generated.
+
+```go
+package main
+
+import (
+    "errors"
+    "github.com/safeblock-dev/zlog"
+    "github.com/rs/zerolog/log"
+)
+
+func main() {
+	zlog.Init(
+		zlog.WithColor(),
+		zlog.WithFormat(zlog.FormatModeText),
+		zlog.WithVersion("1.0.0"),
+	)
+
+	  log.Info().Msg("This is an info message")
+}
+```
+
+```bash
+2024-09-20T13:50:59+00:00 INF This is an info message version=1.0.0
 ```
 
 ### Error Handling
@@ -136,7 +192,7 @@ import (
 )
 
 func main() {
-    zlog.Init("1.0.0")
+    zlog.Init()
 
     err := errors.New("something went wrong")
     log.Error().Err(err).Msg("An error occurred")
@@ -162,7 +218,7 @@ func TestLogging(t *testing.T) {
     var buf bytes.Buffer
     log.Logger = log.Output(&buf)
 
-    zlog.Init("1.0.0")
+    zlog.Init()
     log.Info().Msg("test log")
 
     require.Contains(t, buf.String(), "test log")
