@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type LoggerFormatMode string
@@ -52,11 +53,14 @@ func envLoggerOptions(loggerOpts *loggerOptions) {
 
 	// Override log format if specified in environment variable
 	if val, ok := os.LookupEnv("LOG_FORMAT"); ok {
-		v, err := strconv.ParseBool(val)
-		if err != nil {
-			panic(err)
+		switch LoggerFormatMode(val) {
+		case FormatModeJSON:
+			loggerOpts.format = FormatModeJSON
+		case FormatModeText:
+			loggerOpts.format = FormatModeText
+		default:
+			log.Warn().Msgf("invalid '%s' as format mode", val)
 		}
-		loggerOpts.withColor = v
 	}
 
 	// Override log level if specified in environment variable
