@@ -2,7 +2,7 @@ module github.com/safeblock-dev/zlog
 
 go 1.22
 
-toolchain go1.23.3
+toolchain go1.23
 
 require github.com/rs/zerolog v1.33.0
 
