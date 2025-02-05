@@ -32,7 +32,8 @@ func defaultLoggerOptions() *loggerOptions {
 		version:    nil,
 	}
 }
-func envLoggerOptions(loggerOpts *loggerOptions) {
+
+func envLoggerOptions(loggerOpts *loggerOptions) { //nolint: cyclop
 	// Enable caller information if specified in environment variables
 	if val, ok := os.LookupEnv("LOG_CALLER"); ok {
 		v, err := strconv.ParseBool(val)
@@ -75,7 +76,7 @@ func envLoggerOptions(loggerOpts *loggerOptions) {
 
 // LoggerOption configures the logger.
 type LoggerOption interface {
-	apply(*loggerOptions)
+	apply(*loggerOptions) //nolint: inamedparam
 }
 
 // funcLoggerOption wraps a function that modifies loggerOptions into an
@@ -95,7 +96,7 @@ func newFuncLoggerOption(f func(*loggerOptions)) *funcLoggerOption {
 }
 
 // WithCaller sets logging of the caller's file and line number mode (default: true).
-func WithCaller(caller ...bool) LoggerOption {
+func WithCaller(caller ...bool) LoggerOption { //nolint: ireturn
 	ok := true
 	if len(caller) > 0 {
 		ok = caller[0]
@@ -107,7 +108,7 @@ func WithCaller(caller ...bool) LoggerOption {
 }
 
 // WithColor sets the color mode (default: true).
-func WithColor(color ...bool) LoggerOption {
+func WithColor(color ...bool) LoggerOption { //nolint: ireturn
 	ok := true
 	if len(color) > 0 {
 		ok = color[0]
@@ -119,21 +120,21 @@ func WithColor(color ...bool) LoggerOption {
 }
 
 // WithFormat sets the logger format.
-func WithFormat(mode LoggerFormatMode) LoggerOption {
+func WithFormat(mode LoggerFormatMode) LoggerOption { //nolint: ireturn
 	return newFuncLoggerOption(func(o *loggerOptions) {
 		o.format = mode
 	})
 }
 
 // WithLevel sets the logger level.
-func WithLevel(level zerolog.Level) LoggerOption {
+func WithLevel(level zerolog.Level) LoggerOption { //nolint: ireturn
 	return newFuncLoggerOption(func(o *loggerOptions) {
 		o.level = level
 	})
 }
 
 // WithVersion sets the app version.
-func WithVersion(version any) LoggerOption {
+func WithVersion(version any) LoggerOption { //nolint: ireturn
 	return newFuncLoggerOption(func(o *loggerOptions) {
 		o.version = version
 	})

@@ -19,7 +19,7 @@ func Init(opts ...LoggerOption) {
 	zerolog.SetGlobalLevel(loggerOpts.level)
 
 	if loggerOpts.format == FormatModeText {
-		log.Logger = log.Logger.Output(zerolog.ConsoleWriter{ // nolint: exhaustruct
+		log.Logger = log.Logger.Output(zerolog.ConsoleWriter{ //nolint: exhaustruct
 			NoColor:    !loggerOpts.withColor,
 			Out:        os.Stderr,    // Output to stderr.
 			TimeFormat: time.RFC3339, // Time format for logging.
